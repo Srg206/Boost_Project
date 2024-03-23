@@ -1,14 +1,26 @@
 #include <iostream>
 #include <string>
+#include <chrono>
 #include <thread>
 #include <boost/asio.hpp>
 
 void handle_connection(boost::asio::ip::tcp::socket& socket) {
     try {
-        std::string greating = "You`v succesfully connected to the server!\n";
+        std::string greating = "You`v connected to the server!\n";
         std::mutex mtx;
         mtx.lock();
         boost::asio::write(socket, boost::asio::buffer(greating));
+        boost::asio::streambuf buffer;
+
+        while (true) {
+
+            boost::asio::write(socket, boost::asio::buffer("123"));
+            boost::asio::read_until(socket, buffer, '\0'); // Чтение до символа новой строки
+            std::string message(boost::asio::buffers_begin(buffer.data()), boost::asio::buffers_end(buffer.data()));
+            std::cout << "Received message: " << message << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        }
+
         std::string message = "";
 
         mtx.unlock();
@@ -39,7 +51,7 @@ void handle_connection(boost::asio::ip::tcp::socket& socket) {
 int main() {
    
     boost::asio::io_context io_context;
-    auto endpt = boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 8080);
+    auto endpt = boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string("127.0.0.1"), 8080);
     boost::asio::ip::tcp::acceptor acceptor(io_context, endpt);
     while (true) {
         boost::asio::ip::tcp::socket socket(io_context);
