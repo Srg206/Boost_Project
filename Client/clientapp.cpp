@@ -45,28 +45,24 @@ int main() {
 	boost::asio::ip::tcp::socket socket(io_context);
 	try {
 		boost::asio::ip::tcp::resolver resolver(io_context);
-		boost::asio::ip::tcp::resolver::results_type endpoints = resolver.resolve("127.0.0.1", "8080");
+		boost::asio::ip::tcp::resolver::results_type endpoints = resolver.resolve("10.54.65.132", "8080");
 		boost::asio::connect(socket, endpoints);
 		
+		std::string ping = "TESTING PING MESSAGE\n";
+
+		std::mutex mtx;
+		//mtx.lock();
+		boost::asio::write(socket, boost::asio::buffer(ping));
+		std::cout << "wrote to socket" << std::endl;
+		//mtx.unlock();
 		
+
+
 		boost::asio::streambuf buffer;
-		boost::asio::read_until(socket, buffer, '\0'); // Чтение до символа новой строки
-		std::string message(boost::asio::buffers_begin(buffer.data()), boost::asio::buffers_end(buffer.data()));
-		std::cout << "Received message: " << message << std::endl;
-		while (true) {
-			boost::asio::read_until(socket, buffer, '\0'); // Чтение до символа новой строки
-			std::string message(boost::asio::buffers_begin(buffer.data()), boost::asio::buffers_end(buffer.data()));
-			std::cout << "Received message: " << message << std::endl;
-			boost::asio::write(socket, boost::asio::buffer("123"));
-			std::this_thread::sleep_for(std::chrono::milliseconds(500));
-			//system("cls");
-			buffer.consume(buffer.size());
-
-		}
+		boost::asio::read_until(socket, buffer, '\n');
 		
-
-
-		//handle_connection(socket);
+		std::string message(boost::asio::buffers_begin(buffer.data()), boost::asio::buffers_end(buffer.data()));
+		std::cout << "Received message: " << message << (message==ping? " is message we`v sended   ------- OK" : " is not message we`v sended   ------- WRONG ") << std::endl;
 
 	}
 	catch (std::exception& ex) {
