@@ -45,7 +45,7 @@ int main() {
 	boost::asio::ip::tcp::socket socket(io_context);
 	try {
 		boost::asio::ip::tcp::resolver resolver(io_context);
-		boost::asio::ip::tcp::resolver::results_type endpoints = resolver.resolve("10.54.65.132", "8080");
+		boost::asio::ip::tcp::resolver::results_type endpoints = resolver.resolve("127.0.0.1", "8080");
 		boost::asio::connect(socket, endpoints);
 		
 		std::string ping = "TESTING PING MESSAGE\n";

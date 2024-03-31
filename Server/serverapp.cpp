@@ -24,7 +24,7 @@ void handle_connection(boost::asio::ip::tcp::socket& socket) {
 int main() {
    
     boost::asio::io_context io_context;
-    auto endpt = boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string("10.54.65.132"), 8080);//"10.54.65.132"
+    auto endpt = boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string("127.0.0.1"), 8080);//"10.54.65.132"
     boost::asio::ip::tcp::acceptor acceptor(io_context, endpt);
 
 
